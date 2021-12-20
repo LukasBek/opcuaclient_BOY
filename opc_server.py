@@ -2,10 +2,9 @@ from datetime import date, datetime
 import logging
 import asyncio
 import sys
-import ast
 sys.path.insert(0, "..")
 
-from asyncua import ua, Server
+from asyncua import Server
 
 
 async def main():
