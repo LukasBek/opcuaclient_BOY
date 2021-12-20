@@ -1,17 +1,28 @@
-from opcua import Client, ua, Node
+#from opcua import Client, ua, Node
+from asyncua import Client, Node, ua
 import atexit
 from datetime import datetime
+import logging
+import asyncio
+import sys
 
-
-url = "opc.tcp://192.168.201.177:4842"
-client = Client(url)
+simulation = False
 nodes_dict = {}
 readings = []
+url = "opc.tcp://192.168.201.177:4842"
+client = Client(url)
+
+url_mock = 'opc.tcp://localhost:4840/freeopcua/server/'
+logging.basicConfig(level=logging.INFO)
+_logger = logging.getLogger('asyncua')
 
 
 # this function is only called when a program is shut down to ensure client disconnects
 def exit_handler():
-    textfile = open("BOY_DATA_{0}.txt".format(datetime.now().strftime("%Y-%m-%d-%H-%M-%S")), "w")
+    if not simulation:
+        textfile = open("BOY_DATA_{0}.txt".format(datetime.now().strftime("%Y-%m-%d-%H-%M-%S")), "w")
+    else:
+        textfile = open("SIMULATED_BOY_DATA_{0}.txt".format(datetime.now().strftime("%Y-%m-%d-%H-%M-%S")), "w")
     for list in readings:
         for elem in list:
             textfile.write(str(elem)+",")
@@ -65,10 +76,26 @@ def read_nodes(nodes_list):
         print('exiting')
 
 
+async def test_mock():
+    async with Client(url=url_mock) as client_async:
+        var1 = client_async.get_node("ns=2;i=20002")
+        var2 = client_async.get_node("ns=2;i=20003")
+
+        num1 = await var1.get_value()
+        num2 = await var2.get_value()
+
+        _logger.info(str(num1) + " and " + str(num2))
+
 if __name__ == '__main__':
     # function to ensure OPC Client disconnects on program shutdown
-    atexit.register(exit_handler)
+    # atexit.register(exit_handler)
 
-    client.connect()
-    nodes_list = initalise_nodes()
-    read_nodes(nodes_list)
+
+    #client.connect()
+    #nodes_list = initalise_nodes()
+    #read_nodes(nodes_list)
+    simulation = True
+    asyncio.run(test_mock())
+
+
+
