@@ -89,7 +89,7 @@ async def test_mock():
 if __name__ == '__main__':
     # function to ensure OPC Client disconnects on program shutdown
     # atexit.register(exit_handler)
-    is_simulation = False
+    is_simulation = True
 
     if is_simulation:
         url = 'opc.tcp://localhost:4840/freeopcua/server/'
