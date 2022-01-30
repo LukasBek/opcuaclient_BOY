@@ -3,6 +3,7 @@ from datetime import datetime
 import logging
 import asyncio
 
+is_simulation = True
 
 nodes_dict = {}
 readings = []
@@ -89,7 +90,6 @@ async def test_mock():
 if __name__ == '__main__':
     # function to ensure OPC Client disconnects on program shutdown
     # atexit.register(exit_handler)
-    is_simulation = True
 
     if is_simulation:
         url = 'opc.tcp://localhost:4840/freeopcua/server/'
